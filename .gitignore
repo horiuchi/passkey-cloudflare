@@ -1,5 +1,6 @@
-node_modules
+node_modules/
 
+/.wrangler
 /.cache
 /functions/\[\[path\]\].js
 /functions/\[\[path\]\].js.map
@@ -7,3 +8,4 @@ node_modules
 /functions/version.txt
 /public/build
 .dev.vars
+

@@ -21,6 +21,19 @@ export const logo = style({
   fontWeight: "bold",
 });
 
+export const container = style({
+  display: "flex",
+  alignItems: "center",
+  cursor: "pointer",
+});
+
+export const icon = style({
+  width: "2rem",
+  height: "2rem",
+  borderRadius: "50%",
+  boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.2)",
+});
+
 export const user = style({
   fontWeight: "bold",
 });

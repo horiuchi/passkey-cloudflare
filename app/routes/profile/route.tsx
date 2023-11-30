@@ -1,26 +1,39 @@
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type LoaderFunctionArgs, json } from "@remix-run/cloudflare";
+import { Form, useLoaderData } from "@remix-run/react";
 import { authenticator } from "../../services/auth.server";
-import { useLoaderData } from "@remix-run/react";
 import * as styles from "./styles.css";
+import Layout from "../../components/layout";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request, {
     failureRedirect: "/login",
   });
-  return { user };
+  return json({ user });
 }
 
 export default function Profile() {
   const { user } = useLoaderData<typeof loader>() ?? {};
 
   return (
-    <>
-      <h1>プロファイル</h1>
+    <Layout user={user}>
+      <h1>Profile</h1>
       <div className={styles.userInfo}>
-        <div>名前: {user.username}</div>
-        <div>メールアドレス: {user.email}</div>
+        <div className={styles.row}>
+          icon:
+          {user.iconUrl != null ? (
+            <img
+              src={user.iconUrl}
+              alt="user icon"
+              className={styles.userIcon}
+            />
+          ) : null}
+        </div>
+        <div className={styles.row}>user: {user.name}</div>
+        <div className={styles.row}>email: {user.email}</div>
       </div>
-      <button onClick={undefined}>ログアウト</button>
-    </>
+      <Form action="/logout" method="post">
+        <button className={styles.btnLogout}>Logout</button>
+      </Form>
+    </Layout>
   );
 }

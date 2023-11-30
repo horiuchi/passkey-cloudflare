@@ -8,7 +8,6 @@ export const buttonBase = style({
   fontSize: "1rem",
   fontWeight: "bold",
   padding: "0.5rem 1rem",
-  marginLeft: "1rem",
   cursor: "pointer",
   transition: "all 0.3s ease-in-out",
   ":hover": {

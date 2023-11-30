@@ -1,0 +1,7 @@
+name = "passkey-cloudflare"
+compatibility_date = "2023-04-29"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "passkey-cloudflare"
+database_id = "da97782c-56f5-4b50-80ba-6cc7644103b8"

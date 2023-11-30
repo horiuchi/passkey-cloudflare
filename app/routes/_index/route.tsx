@@ -1,17 +1,24 @@
-import type { MetaFunction } from "@remix-run/cloudflare";
+import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import Layout from "../../components/layout";
+import { authenticator } from "../../services/auth.server";
+import { useLoaderData } from "@remix-run/react";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+export async function loader({ request }: LoaderFunctionArgs) {
+  const user = await authenticator.isAuthenticated(request);
+  return json({ user });
+}
 
 export default function Index() {
+  const { user } = useLoaderData<typeof loader>() ?? {};
+
   return (
-    <>
-      <h1>Passkey Webサービス</h1>
-      <p>GoogleアカウントまたはPasskeyを使用して、簡単にログインできます。</p>
-    </>
+    <Layout user={user}>
+      <h1>Passkey Web Service</h1>
+      <p>
+        Sample service to log in using Passkey. <br />
+        To try it out, first sign in with your Google account and then register
+        Passkey.
+      </p>
+    </Layout>
   );
 }

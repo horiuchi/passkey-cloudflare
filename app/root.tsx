@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/cloudflare";
+import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import {
   Links,
@@ -8,9 +8,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import Header from "./components/header";
-import Footer from "./components/footer";
 import * as styles from "./styles.css";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Example for Passkey" },
+    { name: "description", content: "Web service for trying Passkey" },
+  ];
+};
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -26,11 +31,7 @@ export default function App() {
         <Links />
       </head>
       <body className={styles.base}>
-        <Header />
-        <div className={styles.content}>
-          <Outlet />
-        </div>
-        <Footer />
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

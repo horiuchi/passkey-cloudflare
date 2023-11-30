@@ -8,6 +8,13 @@ import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
+import { initializeGithubAuthStrategy } from "./services/auth.server";
+
+interface AuthEnv {
+  GITHUB_CLIENT_ID: string;
+  GITHUB_CLIENT_SECRET: string;
+  OAUTH_CALLBACK_URL_BASE: string;
+}
 
 export default async function handleRequest(
   request: Request,
@@ -16,6 +23,13 @@ export default async function handleRequest(
   remixContext: EntryContext,
   loadContext: AppLoadContext
 ) {
+  const env = loadContext.env as AuthEnv;
+  initializeGithubAuthStrategy({
+    clientID: env.GITHUB_CLIENT_ID,
+    clientSecret: env.GITHUB_CLIENT_SECRET,
+    callbackURL: `${env.OAUTH_CALLBACK_URL_BASE}/auth/github/callback`,
+  });
+
   const body = await renderToReadableStream(
     <RemixServer context={remixContext} url={request.url} />,
     {

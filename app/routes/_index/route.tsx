@@ -13,8 +13,8 @@ export default function Index() {
 
   return (
     <Layout user={user}>
-      <h1>Passkey Web Service</h1>
-      <p>
+      <h1 className="text-4xl font-bold mb-8">Passkey Web Service</h1>
+      <p className="text-large">
         Sample service to log in using Passkey. <br />
         To try it out, first sign in with your Google account and then register
         Passkey.

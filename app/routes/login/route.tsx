@@ -1,14 +1,15 @@
+import { Button } from "@nextui-org/react";
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
 import { Form, useLoaderData } from "@remix-run/react";
+import { FaGithub, FaGoogle, FaKey } from "react-icons/fa6";
 import { authenticator } from "../../services/auth.server";
 import { sessionStorage } from "../../services/session.server";
-import * as styles from "./styles.css";
 import Layout from "../../components/layout";
 
 type LoaderError = { message: string } | null;
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request);
   if (user != null) {
     return json({ user, error: null });
@@ -26,17 +27,39 @@ export default function Login() {
 
   return (
     <Layout user={user}>
-      <h1>Login</h1>
+      <h1 className="text-4xl font-bold mb-4">Log in</h1>
       {error != null ? (
-        <p role="alert" className={styles.alert}>
+        <p role="alert" className="text-danger m-2">
           {error.message}
         </p>
       ) : null}
       <Form action="/auth/github" method="post">
-        <button className={styles.btnGithub}>Login with GitHub</button>
+        <Button
+          type="submit"
+          className="mt-2"
+          color="primary"
+          variant="ghost"
+          startContent={<FaGithub />}
+        >
+          Log in with Github
+        </Button>
       </Form>
-      <button className={styles.btnGoogle}>Login with Google</button>
-      <button className={styles.btnPasskey}>Login by Passkey</button>
+      <Button
+        className="mt-2"
+        color="primary"
+        variant="ghost"
+        startContent={<FaGoogle />}
+      >
+        Log in with Google
+      </Button>
+      <Button
+        className="mt-2"
+        color="primary"
+        variant="ghost"
+        startContent={<FaKey />}
+      >
+        Log in with Passkey
+      </Button>
     </Layout>
   );
 }

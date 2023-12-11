@@ -1,9 +1,14 @@
-import * as styles from "./styles.css";
+import { Divider, Link } from "@nextui-org/react";
 
 export default function Footer() {
   return (
-    <footer className={styles.footer}>
-      Powered by <a href="https://github.com/horiuchi/">@horiuchi</a>
-    </footer>
+    <>
+      <Divider />
+      <footer className="flex justify-end p-unit-sm opacity-60">
+        <Link color="foreground" href="https://github.com/horiuchi/">
+          Powered by @horiuchi
+        </Link>
+      </footer>
+    </>
   );
 }

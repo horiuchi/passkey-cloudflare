@@ -1,5 +1,4 @@
 import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare";
-import { cssBundleHref } from "@remix-run/css-bundle";
 import {
   Links,
   LiveReload,
@@ -8,7 +7,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import * as styles from "./styles.css";
+import stylesheet from "./tailwind.css";
+import { NextUIProvider } from "@nextui-org/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -18,7 +18,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const links: LinksFunction = () => [
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: stylesheet },
 ];
 
 export default function App() {
@@ -30,11 +30,13 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className={styles.base}>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
+      <body className="h-screen m-0">
+        <NextUIProvider>
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </NextUIProvider>
       </body>
     </html>
   );

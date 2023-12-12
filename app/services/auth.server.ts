@@ -2,10 +2,10 @@ import { Authenticator } from 'remix-auth';
 import type { GitHubStrategyOptions } from 'remix-auth-github';
 import { GitHubStrategy, GitHubStrategyDefaultName } from 'remix-auth-github';
 import invariant from 'tiny-invariant';
-import { sessionStorage } from './session.server';
+import { findUserByProviderId } from '../models/auth';
 import { createUser, type User } from '../models/user';
 import type { Env } from '../types';
-import { findUserByProviderId } from '../models/auth';
+import { sessionStorage } from './session.server';
 
 export const authenticator = new Authenticator<User>(sessionStorage);
 

@@ -3,9 +3,9 @@ import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Form, useLoaderData } from '@remix-run/react';
 import { FaGithub, FaGoogle, FaKey } from 'react-icons/fa6';
+import Layout from '../../components/layout';
 import { authenticator } from '../../services/auth.server';
 import { sessionStorage } from '../../services/session.server';
-import Layout from '../../components/layout';
 
 type LoaderError = { message: string } | null;
 

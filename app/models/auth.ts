@@ -1,9 +1,9 @@
-import { createSelectSchema } from 'drizzle-zod';
-import * as schema from './schema';
-import type { Env } from '../types';
-import { drizzle } from 'drizzle-orm/d1';
-import type { User } from './user';
 import { and, eq } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/d1';
+import { createSelectSchema } from 'drizzle-zod';
+import type { Env } from '../types';
+import * as schema from './schema';
+import type { User } from './user';
 
 const selectSchema = createSelectSchema(schema.auths);
 export type Auth = typeof selectSchema._type;

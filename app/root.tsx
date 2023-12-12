@@ -1,3 +1,4 @@
+import { NextUIProvider } from '@nextui-org/react';
 import type { LinksFunction, MetaFunction } from '@remix-run/cloudflare';
 import {
   Links,
@@ -8,7 +9,6 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import stylesheet from './tailwind.css';
-import { NextUIProvider } from '@nextui-org/react';
 
 export const meta: MetaFunction = () => {
   return [

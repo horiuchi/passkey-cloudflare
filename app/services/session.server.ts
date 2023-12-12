@@ -1,6 +1,6 @@
 import { createCookieSessionStorage } from '@remix-run/cloudflare';
 
-export let sessionStorage = createCookieSessionStorage({
+export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: '_session', // use any name you want here
     sameSite: 'lax', // this helps with CSRF
@@ -11,4 +11,4 @@ export let sessionStorage = createCookieSessionStorage({
   },
 });
 
-export let { getSession, commitSession, destroySession } = sessionStorage;
+export const { getSession, commitSession, destroySession } = sessionStorage;

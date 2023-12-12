@@ -1,4 +1,4 @@
-import { Divider, Link } from "@nextui-org/react";
+import { Divider, Link } from '@nextui-org/react';
 
 export default function Footer() {
   return (

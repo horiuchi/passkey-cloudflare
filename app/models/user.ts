@@ -1,17 +1,17 @@
-import { createId } from "@paralleldrive/cuid2";
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/d1";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
-import type { Env } from "../types";
-import * as schema from "./schema";
+import { createId } from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/d1';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
+import type { Env } from '../types';
+import * as schema from './schema';
 
 const selectSchema = createSelectSchema(schema.users);
 export type User = typeof selectSchema._type;
 
 export async function findUserById(
   env: Env,
-  id: string
+  id: string,
 ): Promise<User | undefined> {
   const db = drizzle(env.DB, { schema });
   const result = await db
@@ -25,7 +25,7 @@ export async function findUserById(
 
 export async function findUserByEmail(
   env: Env,
-  email: string
+  email: string,
 ): Promise<User | undefined> {
   const db = drizzle(env.DB, { schema });
   const result = await db
@@ -64,7 +64,7 @@ export async function createUser(
     name: string;
     email: string;
     iconUrl?: string;
-  }
+  },
 ): Promise<User> {
   const db = drizzle(env.DB, { schema });
   const userId = createId();

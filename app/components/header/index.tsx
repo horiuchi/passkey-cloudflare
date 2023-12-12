@@ -1,5 +1,5 @@
-import { Link } from "@remix-run/react";
-import type { User } from "../../models/user";
+import { Link } from '@remix-run/react';
+import type { User } from '../../models/user';
 import {
   Avatar,
   Button,
@@ -10,8 +10,8 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-} from "@nextui-org/react";
-import SvgLogo from "../SvgLogo";
+} from '@nextui-org/react';
+import SvgLogo from '../SvgLogo';
 
 export interface HeaderProps {
   user: User | null;

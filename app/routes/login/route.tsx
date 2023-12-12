@@ -1,11 +1,11 @@
-import { Button } from "@nextui-org/react";
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { json } from "@remix-run/cloudflare";
-import { Form, useLoaderData } from "@remix-run/react";
-import { FaGithub, FaGoogle, FaKey } from "react-icons/fa6";
-import { authenticator } from "../../services/auth.server";
-import { sessionStorage } from "../../services/session.server";
-import Layout from "../../components/layout";
+import { Button } from '@nextui-org/react';
+import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
+import { json } from '@remix-run/cloudflare';
+import { Form, useLoaderData } from '@remix-run/react';
+import { FaGithub, FaGoogle, FaKey } from 'react-icons/fa6';
+import { authenticator } from '../../services/auth.server';
+import { sessionStorage } from '../../services/session.server';
+import Layout from '../../components/layout';
 
 type LoaderError = { message: string } | null;
 
@@ -16,7 +16,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   const session = await sessionStorage.getSession(
-    request.headers.get("Cookie")
+    request.headers.get('Cookie'),
   );
   const error = session.get(authenticator.sessionErrorKey) as LoaderError;
   return json({ user: null, error });

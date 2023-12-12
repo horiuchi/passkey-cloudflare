@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare";
+import type { LinksFunction, MetaFunction } from '@remix-run/cloudflare';
 import {
   Links,
   LiveReload,
@@ -6,19 +6,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
-import stylesheet from "./tailwind.css";
-import { NextUIProvider } from "@nextui-org/react";
+} from '@remix-run/react';
+import stylesheet from './tailwind.css';
+import { NextUIProvider } from '@nextui-org/react';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Example for Passkey" },
-    { name: "description", content: "Web service for trying Passkey" },
+    { title: 'Example for Passkey' },
+    { name: 'description', content: 'Web service for trying Passkey' },
   ];
 };
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
+  { rel: 'stylesheet', href: stylesheet },
 ];
 
 export default function App() {

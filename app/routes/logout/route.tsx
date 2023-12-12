@@ -1,16 +1,16 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { authenticator } from "../../services/auth.server";
-import Layout from "../../components/layout";
-import { Form, useLoaderData } from "@remix-run/react";
-import { Button } from "@nextui-org/react";
+import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare';
+import { authenticator } from '../../services/auth.server';
+import Layout from '../../components/layout';
+import { Form, useLoaderData } from '@remix-run/react';
+import { Button } from '@nextui-org/react';
 
 export async function action({ request }: LoaderFunctionArgs) {
-  return await authenticator.logout(request, { redirectTo: "/" });
+  return await authenticator.logout(request, { redirectTo: '/' });
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request, {
-    failureRedirect: "/login",
+    failureRedirect: '/login',
   });
   return json({ user });
 }

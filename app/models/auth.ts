@@ -1,9 +1,9 @@
-import { createSelectSchema } from "drizzle-zod";
-import * as schema from "./schema";
-import type { Env } from "../types";
-import { drizzle } from "drizzle-orm/d1";
-import type { User } from "./user";
-import { and, eq } from "drizzle-orm";
+import { createSelectSchema } from 'drizzle-zod';
+import * as schema from './schema';
+import type { Env } from '../types';
+import { drizzle } from 'drizzle-orm/d1';
+import type { User } from './user';
+import { and, eq } from 'drizzle-orm';
 
 const selectSchema = createSelectSchema(schema.auths);
 export type Auth = typeof selectSchema._type;
@@ -12,7 +12,7 @@ export type UserWithAuth = { users: User; auths: Auth };
 export async function findUserByProviderId(
   env: Env,
   provider: string,
-  id: string
+  id: string,
 ): Promise<User | undefined> {
   const db = drizzle(env.DB, { schema });
   const result = await db
@@ -29,8 +29,8 @@ export async function findUserByProviderId(
     .where(
       and(
         eq(schema.auths.provider, provider),
-        eq(schema.auths.providerUserId, id)
-      )
+        eq(schema.auths.providerUserId, id),
+      ),
     )
     .limit(1)
     .execute();

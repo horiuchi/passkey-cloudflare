@@ -1,7 +1,7 @@
-import { type LoaderFunctionArgs, json } from "@remix-run/cloudflare";
-import { Form, useLoaderData } from "@remix-run/react";
-import { authenticator } from "../../services/auth.server";
-import Layout from "../../components/layout";
+import { type LoaderFunctionArgs, json } from '@remix-run/cloudflare';
+import { Form, useLoaderData } from '@remix-run/react';
+import { authenticator } from '../../services/auth.server';
+import Layout from '../../components/layout';
 import {
   Avatar,
   Button,
@@ -11,11 +11,11 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from "@nextui-org/react";
+} from '@nextui-org/react';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request, {
-    failureRedirect: "/login",
+    failureRedirect: '/login',
   });
   return json({ user });
 }

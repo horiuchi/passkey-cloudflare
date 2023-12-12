@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
@@ -7,12 +8,6 @@ import * as schema from "./schema";
 
 const selectSchema = createSelectSchema(schema.users);
 export type User = typeof selectSchema._type;
-
-const insertSchema = createInsertSchema(schema.users, {
-  email: (schema) => schema.email.email(),
-  created_at: z.never(),
-  updated_at: z.never(),
-});
 
 export async function findUserById(
   env: Env,
@@ -48,14 +43,57 @@ export async function getUsers(env: Env): Promise<User[]> {
   return result;
 }
 
+const insertUserSchema = createInsertSchema(schema.users, {
+  email: (schema) => schema.email.email(),
+  iconUrl: (schema) => schema.iconUrl.url().optional(),
+  createdAt: z.never(),
+  updatedAt: z.never(),
+});
+const insertAuthSchema = createInsertSchema(schema.auths, {
+  providerEmail: (schema) => schema.providerEmail.email().optional(),
+  providerIconUrl: (schema) => schema.providerIconUrl.url().optional(),
+  createdAt: z.never(),
+  updatedAt: z.never(),
+});
+
 export async function createUser(
   env: Env,
-  data: typeof insertSchema._type
-): Promise<void> {
-  const user = insertSchema.parse(data);
+  data: {
+    provider: string;
+    providerId: string;
+    name: string;
+    email: string;
+    iconUrl?: string;
+  }
+): Promise<User> {
   const db = drizzle(env.DB, { schema });
+  const userId = createId();
+  const authId = createId();
+
+  const user = insertUserSchema.parse({ ...data, id: userId });
   const result = await db.insert(schema.users).values(user).execute();
   if (result.error != null) {
     throw result.error;
   }
+  {
+    const auth = insertAuthSchema.parse({
+      id: authId,
+      userId,
+      provider: data.provider,
+      providerUserId: data.providerId,
+      providerName: data.name,
+      providerEmail: data.email,
+      providerIconUrl: data.iconUrl,
+    });
+    const result = await db.insert(schema.auths).values(auth).execute();
+    if (result.error != null) {
+      throw result.error;
+    }
+  }
+  return {
+    ...user,
+    iconUrl: user.iconUrl ?? null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 }

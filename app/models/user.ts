@@ -9,7 +9,7 @@ import * as schema from './schema';
 const selectSchema = createSelectSchema(schema.users);
 export type User = typeof selectSchema._type;
 
-export async function findUserById(
+export async function getUserById(
   env: Env,
   id: string,
 ): Promise<User | undefined> {

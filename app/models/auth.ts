@@ -7,7 +7,19 @@ import type { User } from './user';
 
 const selectSchema = createSelectSchema(schema.auths);
 export type Auth = typeof selectSchema._type;
-export type UserWithAuth = { users: User; auths: Auth };
+
+export async function getAuthsByUserId(
+  env: Env,
+  userId: string,
+): Promise<Auth[]> {
+  const db = drizzle(env.DB, { schema });
+  const result = await db
+    .select()
+    .from(schema.auths)
+    .where(eq(schema.auths.userId, userId))
+    .execute();
+  return result;
+}
 
 export async function findUserByProviderId(
   env: Env,

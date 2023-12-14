@@ -58,8 +58,8 @@ export default function Header({ user }: HeaderProps) {
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{user.email}</p>
               </DropdownItem>
-              <DropdownItem key="settings" href="/profile">
-                Profile
+              <DropdownItem key="settings" href="/account">
+                My Account
               </DropdownItem>
               <DropdownItem key="logout" color="danger" href="/logout">
                 Log out

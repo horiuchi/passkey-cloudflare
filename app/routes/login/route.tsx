@@ -2,7 +2,7 @@ import { Button } from '@nextui-org/react';
 import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Form, useLoaderData } from '@remix-run/react';
-import { FaGithub, FaGoogle, FaKey } from 'react-icons/fa6';
+import { FaGithub, FaKey } from 'react-icons/fa6';
 import Layout from '../../components/layout';
 import { authenticator } from '../../services/auth.server';
 import { sessionStorage } from '../../services/session.server';
@@ -44,14 +44,14 @@ export default function Login() {
           Log in with Github
         </Button>
       </Form>
-      <Button
+      {/* <Button
         className="mt-2"
         color="primary"
         variant="ghost"
         startContent={<FaGoogle />}
       >
         Log in with Google
-      </Button>
+      </Button> */}
       <Button
         className="mt-2"
         color="primary"

@@ -8,25 +8,22 @@ import {
   TableHeader,
   TableRow,
 } from '@nextui-org/react';
-import { type LoaderFunctionArgs, json } from '@remix-run/cloudflare';
-import { Form, useLoaderData } from '@remix-run/react';
-import Layout from '../../components/layout';
-import { authenticator } from '../../services/auth.server';
+import { Form } from '@remix-run/react';
+import type { User } from '../../models/user';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await authenticator.isAuthenticated(request, {
-    failureRedirect: '/login',
-  });
-  return json({ user });
+export interface ProfileProps {
+  user: User;
 }
 
-export default function Profile() {
-  const { user } = useLoaderData<typeof loader>();
-
+export default function Profile({ user }: ProfileProps) {
   return (
-    <Layout user={user}>
-      <h1 className="text-4xl font-bold mb-4">Profile</h1>
-      <Table className="w-2/3" hideHeader aria-label="user profile table">
+    <>
+      <h1 className="text-3xl font-bold m-4">Profile</h1>
+      <Table
+        className="w-2/3 max-w-2xl"
+        hideHeader
+        aria-label="user profile table"
+      >
         <TableHeader>
           <TableColumn>NAME</TableColumn>
           <TableColumn>VALUE</TableColumn>
@@ -53,6 +50,6 @@ export default function Profile() {
           Edit Profile
         </Button>
       </Form>
-    </Layout>
+    </>
   );
 }

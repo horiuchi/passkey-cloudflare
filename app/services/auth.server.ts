@@ -7,6 +7,13 @@ import { createUser, type User } from '../models/user';
 import type { Env } from '../types';
 import { sessionStorage } from './session.server';
 
+export const providerNames = {
+  github: GitHubStrategyDefaultName,
+} as const;
+
+export const successRedirect = '/account';
+export const failureRedirect = '/login';
+
 export const authenticator = new Authenticator<User>(sessionStorage);
 
 let githubStrategy: GitHubStrategy<User> | undefined;
@@ -15,7 +22,7 @@ export function initializeGithubAuthStrategy(options: GitHubStrategyOptions) {
     return;
   }
 
-  const provider = GitHubStrategyDefaultName;
+  const provider = providerNames.github;
   const strategy = new GitHubStrategy(options, async ({ profile, context }) => {
     invariant(context?.env, 'Missing env in context');
 

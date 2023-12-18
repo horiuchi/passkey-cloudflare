@@ -26,7 +26,7 @@ export async function getUserById(
 export async function findUserByEmail(
   env: Env,
   email: string,
-): Promise<User | undefined> {
+): Promise<User | null> {
   const db = drizzle(env.DB, { schema });
   const result = await db
     .select()
@@ -34,7 +34,7 @@ export async function findUserByEmail(
     .where(eq(schema.users.email, email))
     .limit(1)
     .execute();
-  return result[0];
+  return result[0] ?? null;
 }
 
 export async function getUsers(env: Env): Promise<User[]> {

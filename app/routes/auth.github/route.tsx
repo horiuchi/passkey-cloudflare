@@ -1,17 +1,18 @@
 import type { ActionFunctionArgs } from '@remix-run/cloudflare';
 import { redirect } from '@remix-run/cloudflare';
+import { authenticator } from '../../services/auth.server';
 import {
-  authenticator,
   failureRedirect,
+  providerNames,
   successRedirect,
-} from '../../services/auth.server';
+} from '../../services/constants';
 
 export async function loader() {
   return redirect(failureRedirect);
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
-  return authenticator.authenticate('github', request, {
+  return authenticator.authenticate(providerNames.github, request, {
     context,
     successRedirect,
     failureRedirect,

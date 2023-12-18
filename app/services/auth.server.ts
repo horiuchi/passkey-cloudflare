@@ -1,22 +1,29 @@
 import { Authenticator } from 'remix-auth';
 import type { GitHubStrategyOptions } from 'remix-auth-github';
-import { GitHubStrategy, GitHubStrategyDefaultName } from 'remix-auth-github';
+import { GitHubStrategy } from 'remix-auth-github';
+import { WebAuthnStrategy } from 'remix-auth-webauthn';
 import invariant from 'tiny-invariant';
 import { findUserByProviderId } from '../models/auth';
-import { createUser, type User } from '../models/user';
+import {
+  createAuthenticator,
+  getAuthenticatorById,
+  getAuthenticatorsByUserId,
+} from '../models/authenticator';
+import {
+  createUser,
+  findUserByEmail,
+  getUserById,
+  type User,
+} from '../models/user';
 import type { Env } from '../types';
+import { providerNames } from './constants';
 import { sessionStorage } from './session.server';
-
-export const providerNames = {
-  github: GitHubStrategyDefaultName,
-} as const;
-
-export const successRedirect = '/account';
-export const failureRedirect = '/login';
 
 export const authenticator = new Authenticator<User>(sessionStorage);
 
 let githubStrategy: GitHubStrategy<User> | undefined;
+let webAuthnStrategy: WebAuthnStrategy<User> | undefined;
+
 export function initializeGithubAuthStrategy(options: GitHubStrategyOptions) {
   if (githubStrategy != null) {
     return;
@@ -52,4 +59,73 @@ export function initializeGithubAuthStrategy(options: GitHubStrategyOptions) {
   });
   authenticator.use(strategy);
   githubStrategy = strategy;
+}
+
+export function initializeWebAuthnStrategy(env: Env) {
+  if (webAuthnStrategy != null) {
+    return;
+  }
+
+  const strategy = new WebAuthnStrategy(
+    {
+      rpName: 'Example of Passkey',
+      rpID: (request) => new URL(request.url).hostname,
+      origin: (request) => new URL(request.url).origin,
+      getUserAuthenticators: async (user: User | null) => {
+        const authenticators = await getAuthenticatorsByUserId(env, user?.id);
+
+        return authenticators.map((authenticator) => ({
+          ...authenticator,
+          transports: authenticator.transports.split(','),
+        }));
+      },
+      getUserDetails: (user: User | null) =>
+        user ? { id: user.id, username: user.email } : null,
+      getUserByUsername: (username) => findUserByEmail(env, username),
+      getAuthenticatorById: (id) => getAuthenticatorById(env, id),
+    },
+    async ({ authenticator, type, username }) => {
+      let user: User | null = null;
+      const savedAuthenticator = await getAuthenticatorById(
+        env,
+        authenticator.credentialID,
+      );
+      if (type === 'registration') {
+        if (savedAuthenticator) {
+          throw new Error('Authenticator has already been registered.');
+        } else {
+          if (!username) throw new Error('Email is required.');
+
+          user = await findUserByEmail(env, username);
+          if (user == null) throw new Error('User is not found.');
+
+          await createAuthenticator(env, user.id, authenticator);
+        }
+      } else if (type === 'authentication') {
+        if (!savedAuthenticator) throw new Error('Authenticator not found');
+        user = (await getUserById(env, savedAuthenticator.userId)) ?? null;
+      }
+
+      if (!user) throw new Error('User not found');
+      return user;
+    },
+  );
+  authenticator.use(strategy);
+  webAuthnStrategy = strategy;
+}
+
+export async function generateWebAuthnRegistrationOptions(
+  request: Request,
+  user: User | null,
+) {
+  if (webAuthnStrategy == null) {
+    throw new Error('WebAuthnStrategy is not initialized.');
+  }
+
+  const res = await webAuthnStrategy.generateOptions(
+    request,
+    sessionStorage,
+    user,
+  );
+  return res;
 }

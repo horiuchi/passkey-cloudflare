@@ -2,7 +2,12 @@
   DO NOT RENAME THIS FILE FOR DRIZZLE-ORM TO WORK
 */
 import { sql } from 'drizzle-orm';
-import { sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import {
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from 'drizzle-orm/sqlite-core';
 
 const sharedColumns = {
   createdAt: text('created_at')
@@ -50,3 +55,17 @@ export const auths = sqliteTable(
     ),
   }),
 );
+
+export const authenticators = sqliteTable('authenticators', {
+  id: text('id').primaryKey().notNull(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  credentialPublicKey: text('credential_public_key').notNull(),
+  counter: integer('counter').notNull(),
+  credentialDeviceType: text('credential_device_type').notNull(),
+  credentialBackedUp: integer('credential_backed_up').notNull(),
+  transports: text('transports').notNull(),
+
+  ...sharedColumns,
+});

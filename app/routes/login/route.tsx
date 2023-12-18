@@ -3,27 +3,35 @@ import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Form, useLoaderData } from '@remix-run/react';
 import { FaGithub, FaKey } from 'react-icons/fa6';
+import { handleFormSubmit } from 'remix-auth-webauthn';
 import Layout from '../../components/layout';
-import { authenticator } from '../../services/auth.server';
+import {
+  authenticator,
+  generateWebAuthnRegistrationOptions,
+} from '../../services/auth.server';
 import { sessionStorage } from '../../services/session.server';
 
 type LoaderError = { message: string } | null;
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request);
+  const options = await generateWebAuthnRegistrationOptions(request, user);
+  const opts = await options.json();
+  const init = { headers: options.headers };
+
   if (user != null) {
-    return json({ user, error: null });
+    return json({ user, opts, error: null }, init);
   }
 
   const session = await sessionStorage.getSession(
     request.headers.get('Cookie'),
   );
   const error = session.get(authenticator.sessionErrorKey) as LoaderError;
-  return json({ user: null, error });
+  return json({ user: null, opts, error }, init);
 }
 
 export default function Login() {
-  const { user, error } = useLoaderData<typeof loader>() ?? {};
+  const { user, opts, error } = useLoaderData<typeof loader>() ?? {};
 
   return (
     <Layout user={user}>
@@ -52,14 +60,23 @@ export default function Login() {
       >
         Log in with Google
       </Button> */}
-      <Button
-        className="mt-2"
-        color="primary"
-        variant="ghost"
-        startContent={<FaKey />}
+      <Form
+        action="/auth/passkey"
+        onSubmit={handleFormSubmit(opts)}
+        method="post"
       >
-        Log in with Passkey
-      </Button>
+        <Button
+          type="submit"
+          name="intent"
+          value="authentication"
+          className="mt-2"
+          color="primary"
+          variant="ghost"
+          startContent={<FaKey />}
+        >
+          Log in with Passkey
+        </Button>
+      </Form>
     </Layout>
   );
 }

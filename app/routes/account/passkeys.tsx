@@ -28,12 +28,12 @@ interface PasskeysProps {
   opts: WebAuthnOptionsResponse;
 }
 
-interface AddPasskeyModalProps {
+interface AddPasskeyButtonProps {
   username: string;
   opts: WebAuthnOptionsResponse;
 }
 
-function AddPasskeyModal({ username, opts }: AddPasskeyModalProps) {
+function AddPasskeyButton({ username, opts }: AddPasskeyButtonProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -93,6 +93,55 @@ function AddPasskeyModal({ username, opts }: AddPasskeyModalProps) {
   );
 }
 
+interface DeletePasskeyButtonProps {
+  authenticator: Authenticator;
+}
+
+function DeletePasskeyButton({ authenticator }: DeletePasskeyButtonProps) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  return (
+    <>
+      <Tooltip content="Delete key">
+        <Button isIconOnly variant="ghost" aria-label="Delete" onPress={onOpen}>
+          <FaTrash />
+        </Button>
+      </Tooltip>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
+        <ModalContent>
+          {(onClose) => (
+            <Form action="delete" method="POST">
+              <ModalHeader className="flex flex-col gap-1">
+                Delete Passkey
+              </ModalHeader>
+              <ModalBody>
+                <p>
+                  Do you really want to delete the passkey named
+                  <span className="font-semibold">{` ${authenticator.name} `}</span>
+                  ?
+                </p>
+                <input
+                  type="hidden"
+                  name="id"
+                  value={authenticator.credentialID}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" variant="ghost" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit" color="danger" variant="ghost">
+                  Delete
+                </Button>
+              </ModalFooter>
+            </Form>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
 export default function Passkeys({
   user,
   authenticators,
@@ -104,7 +153,7 @@ export default function Passkeys({
     <>
       <h1 className="text-3xl font-bold m-4">Passkeys</h1>
       <div className="w-2/3 max-w-2xl">
-        <AddPasskeyModal username={username} opts={opts} />
+        <AddPasskeyButton username={username} opts={opts} />
 
         <Table hideHeader className="mt-2" aria-label="my authenticators table">
           <TableHeader>
@@ -115,36 +164,29 @@ export default function Passkeys({
             {(item) => (
               <TableRow key={item.credentialID}>
                 <TableCell>
-                  <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">
-                      {item.name}
-                    </p>
-                    <p className="text-bold text-tiny capitalize text-default-400">
-                      {item.credentialID}
-                    </p>
-                  </div>
+                  <Input
+                    classNames={{ mainWrapper: 'w-full' }}
+                    type="text"
+                    label=""
+                    labelPlacement="outside-left"
+                    variant="bordered"
+                    defaultValue={item.name}
+                    description={item.credentialID}
+                    isReadOnly
+                    endContent={
+                      <Button
+                        isIconOnly
+                        color="default"
+                        variant="light"
+                        aria-label="Edit"
+                      >
+                        <FaPen />
+                      </Button>
+                    }
+                  />
                 </TableCell>
                 <TableCell className="flex justify-around">
-                  <Tooltip content="Edit name">
-                    <Button
-                      isIconOnly
-                      color="primary"
-                      variant="ghost"
-                      aria-label="Edit"
-                    >
-                      <FaPen />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Delete key">
-                    <Button
-                      isIconOnly
-                      color="danger"
-                      variant="ghost"
-                      aria-label="Delete"
-                    >
-                      <FaTrash />
-                    </Button>
-                  </Tooltip>
+                  <DeletePasskeyButton authenticator={item} />
                 </TableCell>
               </TableRow>
             )}

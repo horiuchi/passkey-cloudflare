@@ -91,3 +91,17 @@ export async function createAuthenticator(
   }
   return convert(authenticator);
 }
+
+export async function deleteAuthenticator(
+  env: Env,
+  credentialID: string,
+): Promise<void> {
+  const db = drizzle(env.DB, { schema });
+  const result = await db
+    .delete(schema.authenticators)
+    .where(eq(schema.authenticators.id, credentialID))
+    .execute();
+  if (result.error != null) {
+    throw result.error;
+  }
+}

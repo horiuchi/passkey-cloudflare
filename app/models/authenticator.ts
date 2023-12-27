@@ -1,7 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod';
-import type { Authenticator } from 'remix-auth-webauthn';
 import { z } from 'zod';
 import type { Env } from '../types';
 import * as schema from './schema';
@@ -11,6 +10,17 @@ const selectSchema = createSelectSchema(schema.authenticators, {
   updatedAt: z.string().optional(),
 });
 type AuthenticatorRow = typeof selectSchema._type;
+
+export interface Authenticator {
+  credentialID: string;
+  name: string;
+  userId: string;
+  credentialPublicKey: string;
+  counter: number;
+  credentialDeviceType: string;
+  credentialBackedUp: number;
+  transports: string;
+}
 
 function convert(row: AuthenticatorRow): Authenticator {
   return {
@@ -61,7 +71,8 @@ const insertSchema = createInsertSchema(schema.authenticators, {
 export async function createAuthenticator(
   env: Env,
   userId: string,
-  data: Omit<Authenticator, 'userId'>,
+  name: string,
+  data: Omit<Authenticator, 'userId' | 'name'>,
 ): Promise<Authenticator> {
   const db = drizzle(env.DB, { schema });
 
@@ -69,6 +80,7 @@ export async function createAuthenticator(
     ...data,
     userId,
     id: data.credentialID,
+    name,
   });
   const result = await db
     .insert(schema.authenticators)

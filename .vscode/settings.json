@@ -4,6 +4,7 @@
     "isbot",
     "localtime",
     "nextui",
-    "popovertarget"
+    "popovertarget",
+    "simplewebauthn"
   ]
 }

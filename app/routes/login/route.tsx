@@ -3,13 +3,13 @@ import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Form, useLoaderData } from '@remix-run/react';
 import { FaGithub, FaKey } from 'react-icons/fa6';
-import { handleFormSubmit } from 'remix-auth-webauthn';
 import Layout from '../../components/layout';
 import {
   authenticator,
   generateWebAuthnRegistrationOptions,
 } from '../../services/auth.server';
 import { sessionStorage } from '../../services/session.server';
+import { handleFormSubmit } from '../../services/webauthn';
 
 type LoaderError = { message: string } | null;
 

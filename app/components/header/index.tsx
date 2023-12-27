@@ -19,7 +19,7 @@ export interface HeaderProps {
 
 export default function Header({ user }: HeaderProps) {
   return (
-    <Navbar isBordered>
+    <Navbar isBordered position="static">
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
           <Link className="hidden sm:block font-bold text-inherit" to="/">

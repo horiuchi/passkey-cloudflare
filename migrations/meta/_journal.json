@@ -43,6 +43,13 @@
       "when": 1702614406702,
       "tag": "0005_short_wendell_vaughn",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1703643264341,
+      "tag": "0006_smart_nekra",
+      "breakpoints": true
     }
   ]
 }

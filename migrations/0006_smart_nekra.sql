@@ -1,0 +1,1 @@
+ALTER TABLE authenticators ADD `name` text NOT NULL;

@@ -5,9 +5,9 @@ import Header from '../header';
 
 export default function Layout(props: PropsWithChildren<HeaderProps>) {
   return (
-    <div className="h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header {...props} />
-      <div className="flex flex-col flex-1 items-center justify-center">
+      <div className="flex flex-col flex-1 items-center justify-center p-4">
         {props.children}
       </div>
       <Footer />

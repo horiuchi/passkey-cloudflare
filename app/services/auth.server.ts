@@ -1,7 +1,6 @@
 import { Authenticator } from 'remix-auth';
 import type { GitHubStrategyOptions } from 'remix-auth-github';
 import { GitHubStrategy } from 'remix-auth-github';
-import { WebAuthnStrategy } from 'remix-auth-webauthn';
 import invariant from 'tiny-invariant';
 import { findUserByProviderId } from '../models/auth';
 import {
@@ -18,6 +17,7 @@ import {
 import type { Env } from '../types';
 import { providerNames } from './constants';
 import { sessionStorage } from './session.server';
+import { WebAuthnStrategy } from './webauthn';
 
 export const authenticator = new Authenticator<User>(sessionStorage);
 
@@ -84,7 +84,7 @@ export function initializeWebAuthnStrategy(env: Env) {
       getUserByUsername: (username) => findUserByEmail(env, username),
       getAuthenticatorById: (id) => getAuthenticatorById(env, id),
     },
-    async ({ authenticator, type, username }) => {
+    async ({ authenticator, type, name, username }) => {
       let user: User | null = null;
       const savedAuthenticator = await getAuthenticatorById(
         env,
@@ -94,12 +94,13 @@ export function initializeWebAuthnStrategy(env: Env) {
         if (savedAuthenticator) {
           throw new Error('Authenticator has already been registered.');
         } else {
-          if (!username) throw new Error('Email is required.');
+          if (!name) throw new Error('Name is required.');
 
+          if (!username) throw new Error('Email is required.');
           user = await findUserByEmail(env, username);
           if (user == null) throw new Error('User is not found.');
 
-          await createAuthenticator(env, user.id, authenticator);
+          await createAuthenticator(env, user.id, name, authenticator);
         }
       } else if (type === 'authentication') {
         if (!savedAuthenticator) throw new Error('Authenticator not found');

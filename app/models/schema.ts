@@ -58,6 +58,7 @@ export const auths = sqliteTable(
 
 export const authenticators = sqliteTable('authenticators', {
   id: text('id').primaryKey().notNull(),
+  name: text('name').notNull(),
   userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),

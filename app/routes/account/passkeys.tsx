@@ -16,7 +16,7 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import { Form } from '@remix-run/react';
-import { FaKey, FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
+import { FaPen, FaPlus, FaTrash } from 'react-icons/fa6';
 import type { Authenticator } from '../../models/authenticator';
 import type { User } from '../../models/user';
 import type { WebAuthnOptionsResponse } from '../../services/webauthn';
@@ -63,9 +63,8 @@ function AddPasskeyButton({ username, opts }: AddPasskeyButtonProps) {
                 <Input
                   name="name"
                   autoFocus
-                  endContent={<FaKey />}
                   label="Name"
-                  placeholder="Enter your Passkey name"
+                  placeholder="Enter your Passkey's name"
                   variant="flat"
                   required
                 />
@@ -83,6 +82,64 @@ function AddPasskeyButton({ username, opts }: AddPasskeyButtonProps) {
                   variant="ghost"
                 >
                   Add
+                </Button>
+              </ModalFooter>
+            </Form>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+interface EditPasskeyNameButtonProps {
+  authenticator: Authenticator;
+}
+
+function EditPasskeyNameButton({ authenticator }: EditPasskeyNameButtonProps) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  return (
+    <>
+      <Tooltip content="Edit Passkey's name">
+        <Button isIconOnly variant="ghost" aria-label="Edit" onPress={onOpen}>
+          <FaPen />
+        </Button>
+      </Tooltip>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
+        <ModalContent>
+          {(onClose) => (
+            <Form action="edit" method="POST">
+              <ModalHeader className="flex flex-col gap-1">
+                Edit Passkey's name
+              </ModalHeader>
+              <ModalBody>
+                <input
+                  type="hidden"
+                  name="id"
+                  value={authenticator.credentialID}
+                />
+                <Input
+                  name="name"
+                  autoFocus
+                  label="Name"
+                  defaultValue={authenticator.name}
+                  placeholder="Enter your Passkey's name"
+                  variant="flat"
+                  required
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" variant="ghost" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  color="primary"
+                  variant="ghost"
+                  onClick={onClose}
+                >
+                  OK
                 </Button>
               </ModalFooter>
             </Form>
@@ -130,7 +187,12 @@ function DeletePasskeyButton({ authenticator }: DeletePasskeyButtonProps) {
                 <Button color="default" variant="ghost" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button type="submit" color="danger" variant="ghost">
+                <Button
+                  type="submit"
+                  color="danger"
+                  variant="ghost"
+                  onClick={onClose}
+                >
                   Delete
                 </Button>
               </ModalFooter>
@@ -164,28 +226,15 @@ export default function Passkeys({
             {(item) => (
               <TableRow key={item.credentialID}>
                 <TableCell>
-                  <Input
-                    classNames={{ mainWrapper: 'w-full' }}
-                    type="text"
-                    label=""
-                    labelPlacement="outside-left"
-                    variant="bordered"
-                    defaultValue={item.name}
-                    description={item.credentialID}
-                    isReadOnly
-                    endContent={
-                      <Button
-                        isIconOnly
-                        color="default"
-                        variant="light"
-                        aria-label="Edit"
-                      >
-                        <FaPen />
-                      </Button>
-                    }
-                  />
+                  <div className="flex flex-col">
+                    <p>{item.name}</p>
+                    <p className="text-tiny text-foreground-400 overflow-hidden text-nowrap text-ellipsis">
+                      {item.credentialID}
+                    </p>
+                  </div>
                 </TableCell>
                 <TableCell className="flex justify-around">
+                  <EditPasskeyNameButton authenticator={item} />
                   <DeletePasskeyButton authenticator={item} />
                 </TableCell>
               </TableRow>

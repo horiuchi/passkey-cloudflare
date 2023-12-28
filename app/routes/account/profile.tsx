@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -8,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from '@nextui-org/react';
-import { Form } from '@remix-run/react';
 import type { User } from '../../models/user';
 
 export interface ProfileProps {
@@ -45,11 +43,11 @@ export default function Profile({ user }: ProfileProps) {
           </TableRow>
         </TableBody>
       </Table>
-      <Form action="/edit" method="post">
+      {/* <Form action="/edit" method="post">
         <Button type="submit" className="mt-4" color="primary" variant="ghost">
           Edit Profile
         </Button>
-      </Form>
+      </Form> */}
     </>
   );
 }

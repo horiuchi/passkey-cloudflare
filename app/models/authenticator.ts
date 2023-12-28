@@ -92,6 +92,22 @@ export async function createAuthenticator(
   return convert(authenticator);
 }
 
+export async function updateAuthenticatorName(
+  env: Env,
+  credentialID: string,
+  name: string,
+): Promise<void> {
+  const db = drizzle(env.DB, { schema });
+  const result = await db
+    .update(schema.authenticators)
+    .set({ name })
+    .where(eq(schema.authenticators.id, credentialID))
+    .execute();
+  if (result.error != null) {
+    throw result.error;
+  }
+}
+
 export async function deleteAuthenticator(
   env: Env,
   credentialID: string,

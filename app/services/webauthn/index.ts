@@ -1,2 +1,2 @@
-export * from "./strategy.js";
-export * from "./handleFormSubmit.js";
+export * from './strategy.js';
+export * from './handleFormSubmit.js';

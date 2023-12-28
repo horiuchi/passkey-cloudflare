@@ -1,16 +1,15 @@
-import type * as React from "react";
-import type { WebAuthnOptionsResponse } from "./strategy.js";
 import {
   startAuthentication,
   startRegistration,
-} from "@simplewebauthn/browser";
+} from '@simplewebauthn/browser';
+import type * as React from 'react';
+import type { WebAuthnOptionsResponse } from './strategy.js';
 
-export * from "@simplewebauthn/browser";
+export * from '@simplewebauthn/browser';
 
 export let nanoid = (t = 21) =>
   crypto
     .getRandomValues(new Uint8Array(t))
-    // eslint-disable-next-line unicorn/no-array-reduce
     .reduce(
       (t, e) =>
         (t +=
@@ -19,9 +18,9 @@ export let nanoid = (t = 21) =>
             : e < 62
               ? (e - 26).toString(36).toUpperCase()
               : e > 62
-                ? "-"
-                : "_"),
-      "",
+                ? '-'
+                : '_'),
+      '',
     );
 
 export function handleFormSubmit(
@@ -39,19 +38,19 @@ export function handleFormSubmit(
       event.preventDefault();
       return false;
     }
-    if (event.nativeEvent.submitter.formMethod === "get") {
+    if (event.nativeEvent.submitter.formMethod === 'get') {
       return true;
     }
     const formData = new FormData(event.currentTarget);
-    const username = formData.get("username")?.toString();
+    const username = formData.get('username')?.toString();
 
     const target = event.currentTarget;
     const submitButtonValue = event.nativeEvent.submitter.value;
     const type =
-      submitButtonValue === "registration"
-        ? "registration"
-        : submitButtonValue === "authentication"
-          ? "authentication"
+      submitButtonValue === 'registration'
+        ? 'registration'
+        : submitButtonValue === 'authentication'
+          ? 'authentication'
           : undefined;
 
     if (!type) {
@@ -60,22 +59,22 @@ export function handleFormSubmit(
       );
     }
 
-    if (type === "registration" && !username) {
+    if (type === 'registration' && !username) {
       throw new Error(
-        "You must provide a username field in your form, and set the `name` attribute to `username`.",
+        'You must provide a username field in your form, and set the `name` attribute to `username`.',
       );
     }
 
     event.preventDefault();
 
     const responseValue =
-      type === "authentication"
+      type === 'authentication'
         ? JSON.stringify(
             await startAuthentication({
               challenge: options.challenge,
               allowCredentials: options.authenticators,
               rpId: options.rp.id,
-              userVerification: "preferred",
+              userVerification: 'preferred',
               timeout: 90 * 1000,
             }),
           )
@@ -92,17 +91,17 @@ export function handleFormSubmit(
               pubKeyCredParams: [
                 {
                   alg: -7,
-                  type: "public-key",
+                  type: 'public-key',
                 },
                 {
                   alg: -257,
-                  type: "public-key",
+                  type: 'public-key',
                 },
               ],
               timeout: 90 * 1000,
-              attestation: "none",
+              attestation: 'none',
               authenticatorSelection: {
-                residentKey: "discouraged",
+                residentKey: 'discouraged',
                 requireResidentKey: false,
               },
               extensions: { credProps: true },
@@ -113,20 +112,22 @@ export function handleFormSubmit(
       'input[name="response"]',
     ) as HTMLInputElement;
     if (!responseEl) {
-      responseEl = Object.assign(document.createElement("input"), {
-        type: "hidden",
-        name: "response",
+      responseEl = Object.assign(document.createElement('input'), {
+        type: 'hidden',
+        name: 'response',
       });
+      // @ts-ignore
       target.prepend(responseEl);
     }
     responseEl.value = responseValue;
 
     let typeEl = target.querySelector('input[name="type"]') as HTMLInputElement;
     if (!typeEl) {
-      typeEl = Object.assign(document.createElement("input"), {
-        type: "hidden",
-        name: "type",
+      typeEl = Object.assign(document.createElement('input'), {
+        type: 'hidden',
+        name: 'type',
       });
+      // @ts-ignore
       target.prepend(typeEl);
     }
     typeEl.value = type;

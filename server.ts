@@ -27,7 +27,7 @@ export const onRequest = createPagesFunctionHandler({
       callbackURL: `${env.OAUTH_CALLBACK_URL_BASE}/auth/github/callback`,
     });
     initializeWebAuthnStrategy(env);
-    console.log('initialized', env);
+    // console.log('initialized', env);
 
     return { env };
   },

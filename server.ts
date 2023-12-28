@@ -11,6 +11,7 @@ export const onRequest = createPagesFunctionHandler({
   build,
   getLoadContext: (context) => {
     const env = context.env as Env;
+    // console.log('env', env);
     return { env };
   },
   mode: build.mode,

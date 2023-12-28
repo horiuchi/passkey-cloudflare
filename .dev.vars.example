@@ -1,0 +1,4 @@
+OAUTH_CALLBACK_URL_BASE = "http://localhost:8788"
+GITHUB_CLIENT_ID = "your client id"
+GITHUB_CLIENT_SECRET = "your client secret"
+COOKIE_SECRET = "cookie secret value"

@@ -5,17 +5,19 @@ import { Form, useLoaderData } from '@remix-run/react';
 import { FaGithub, FaKey } from 'react-icons/fa6';
 import Layout from '../../components/layout';
 import {
-  authenticator,
   generateWebAuthnRegistrationOptions,
+  getAuthenticator,
 } from '../../services/auth.server';
-import { sessionStorage } from '../../services/session.server';
+import { getSessionStorage } from '../../services/session.server';
 import { handleFormSubmit } from '../../services/webauthn';
+import type { Env } from '../../types';
 
 type LoaderError = { message: string } | null;
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await authenticator.isAuthenticated(request);
-  const options = await generateWebAuthnRegistrationOptions(request, user);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const env = context.env as Env;
+  const user = await getAuthenticator(env).isAuthenticated(request);
+  const options = await generateWebAuthnRegistrationOptions(request, env, user);
   const opts = await options.json();
   const init = { headers: options.headers };
 
@@ -23,10 +25,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return json({ user, opts, error: null }, init);
   }
 
-  const session = await sessionStorage.getSession(
+  const session = await getSessionStorage(env).getSession(
     request.headers.get('Cookie'),
   );
-  const error = session.get(authenticator.sessionErrorKey) as LoaderError;
+  const error = session.get(
+    getAuthenticator(env).sessionErrorKey,
+  ) as LoaderError;
   return json({ user: null, opts, error }, init);
 }
 

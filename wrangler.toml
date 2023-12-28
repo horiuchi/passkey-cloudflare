@@ -1,6 +1,11 @@
 name = "passkey-cloudflare"
 compatibility_date = "2023-04-29"
 
+[[kv_namespaces]]
+binding = "KV"
+id = "da7d14e5984c49bc8fca31bbd189412f"
+preview_id = "d8f2e72cd0194ec488759a8a12f71150"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "passkey-cloudflare"

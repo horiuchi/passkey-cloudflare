@@ -4,8 +4,8 @@ import Layout from '../../components/layout';
 import { getAuthsByUserId } from '../../models/auth';
 import { getAuthenticatorsByUserId } from '../../models/authenticator';
 import {
-  authenticator,
   generateWebAuthnRegistrationOptions,
+  getAuthenticator,
 } from '../../services/auth.server';
 import { failureRedirect } from '../../services/constants';
 import type { Env } from '../../types';
@@ -14,14 +14,14 @@ import Passkeys from './passkeys';
 import Profile from './profile';
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
-  const user = await authenticator.isAuthenticated(request, {
+  const env = context.env as Env;
+  const user = await getAuthenticator(env).isAuthenticated(request, {
     failureRedirect,
   });
 
-  const env = context.env as Env;
   const auths = await getAuthsByUserId(env, user.id);
   const authenticators = await getAuthenticatorsByUserId(env, user.id);
-  const opts = await generateWebAuthnRegistrationOptions(request, user);
+  const opts = await generateWebAuthnRegistrationOptions(request, env, user);
   return json(
     { user, auths, authenticators, opts: await opts.json() },
     { headers: opts.headers },

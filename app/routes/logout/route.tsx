@@ -2,18 +2,21 @@ import { Button } from '@nextui-org/react';
 import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { Form, useLoaderData } from '@remix-run/react';
 import Layout from '../../components/layout';
-import { authenticator } from '../../services/auth.server';
+import { getAuthenticator } from '../../services/auth.server';
 import { failureRedirect } from '../../services/constants';
+import type { Env } from '../../types';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await authenticator.isAuthenticated(request, {
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const env = context.env as Env;
+  const user = await getAuthenticator(env).isAuthenticated(request, {
     failureRedirect,
   });
   return json({ user });
 }
 
-export async function action({ request }: LoaderFunctionArgs) {
-  return await authenticator.logout(request, { redirectTo: '/' });
+export async function action({ request, context }: LoaderFunctionArgs) {
+  const env = context.env as Env;
+  return await getAuthenticator(env).logout(request, { redirectTo: '/' });
 }
 
 export default function Logout() {

@@ -1,18 +1,20 @@
 import type { ActionFunctionArgs } from '@remix-run/cloudflare';
 import { redirect } from '@remix-run/cloudflare';
-import { authenticator } from '../../services/auth.server';
+import { getAuthenticator } from '../../services/auth.server';
 import {
   failureRedirect,
   providerNames,
   successRedirect,
 } from '../../services/constants';
+import type { Env } from '../../types';
 
 export async function loader() {
   return redirect(failureRedirect);
 }
 
-export async function action({ request }: ActionFunctionArgs) {
-  return authenticator.authenticate(providerNames.passkey, request, {
+export async function action({ request, context }: ActionFunctionArgs) {
+  const env = context.env as Env;
+  return getAuthenticator(env).authenticate(providerNames.passkey, request, {
     successRedirect,
     failureRedirect,
   });

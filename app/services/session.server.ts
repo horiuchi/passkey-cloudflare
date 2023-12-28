@@ -1,14 +1,26 @@
-import { createCookieSessionStorage } from '@remix-run/cloudflare';
+import type { SessionStorage } from '@remix-run/cloudflare';
+import {
+  createCookie,
+  createWorkersKVSessionStorage,
+} from '@remix-run/cloudflare';
+import type { Env } from '../types';
 
-export const sessionStorage = createCookieSessionStorage({
-  cookie: {
-    name: '_session', // use any name you want here
-    sameSite: 'lax', // this helps with CSRF
-    path: '/', // remember to add this so the cookie will work in all routes
-    httpOnly: true, // for security reasons, make this cookie http only
-    secrets: ['passkey-secrets'], // replace this with an actual secret
-    secure: process.env.NODE_ENV === 'production', // enable this in prod only
-  },
-});
+let sessionStorage: SessionStorage;
 
-export const { getSession, commitSession, destroySession } = sessionStorage;
+export function getSessionStorage(env: Env) {
+  if (sessionStorage != null) {
+    return sessionStorage;
+  }
+
+  sessionStorage = createWorkersKVSessionStorage({
+    kv: env.KV,
+    cookie: createCookie('__session', {
+      sameSite: 'lax',
+      path: '/',
+      httpOnly: true,
+      secrets: [env.COOKIE_SECRET],
+      secure: process.env.NODE_ENV === 'production',
+    }),
+  });
+  return sessionStorage;
+}

@@ -1,10 +1,13 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { useLoaderData } from '@remix-run/react';
 import Layout from '../../components/layout';
-import { authenticator } from '../../services/auth.server';
+import { getAuthenticator } from '../../services/auth.server';
+import type { Env } from '../../types';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await authenticator.isAuthenticated(request);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const user = await getAuthenticator(context.env as Env).isAuthenticated(
+    request,
+  );
   return json({ user });
 }
 

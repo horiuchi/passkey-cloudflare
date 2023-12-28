@@ -16,21 +16,35 @@ import {
 } from '../models/user';
 import type { Env } from '../types';
 import { providerNames } from './constants';
-import { sessionStorage } from './session.server';
+import { getSessionStorage } from './session.server';
 import { WebAuthnStrategy } from './webauthn';
 
-export const authenticator = new Authenticator<User>(sessionStorage);
+let authenticator: Authenticator<User>;
+let webAuthnStrategy: WebAuthnStrategy<User>;
 
-let githubStrategy: GitHubStrategy<User> | undefined;
-let webAuthnStrategy: WebAuthnStrategy<User> | undefined;
-
-export function initializeGithubAuthStrategy(options: GitHubStrategyOptions) {
-  if (githubStrategy != null) {
-    return;
+export function getAuthenticator(env: Env) {
+  if (authenticator != null) {
+    return authenticator;
   }
 
+  authenticator = new Authenticator(getSessionStorage(env));
+  authenticator.use(
+    createGithubAuthStrategy({
+      clientID: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
+      callbackURL: `${env.OAUTH_CALLBACK_URL_BASE}/auth/github/callback`,
+    }),
+  );
+
+  webAuthnStrategy = createWebAuthnStrategy(env);
+  authenticator.use(webAuthnStrategy);
+
+  return authenticator;
+}
+
+function createGithubAuthStrategy(options: GitHubStrategyOptions) {
   const provider = providerNames.github;
-  const strategy = new GitHubStrategy(options, async ({ profile, context }) => {
+  return new GitHubStrategy(options, async ({ profile, context }) => {
     invariant(context?.env, 'Missing env in context');
 
     const providerId = profile.id;
@@ -57,16 +71,10 @@ export function initializeGithubAuthStrategy(options: GitHubStrategyOptions) {
       throw error;
     }
   });
-  authenticator.use(strategy);
-  githubStrategy = strategy;
 }
 
-export function initializeWebAuthnStrategy(env: Env) {
-  if (webAuthnStrategy != null) {
-    return;
-  }
-
-  const strategy = new WebAuthnStrategy(
+function createWebAuthnStrategy(env: Env) {
+  return new WebAuthnStrategy(
     {
       rpName: 'Example of Passkey',
       rpID: (request) => new URL(request.url).hostname,
@@ -111,12 +119,11 @@ export function initializeWebAuthnStrategy(env: Env) {
       return user;
     },
   );
-  authenticator.use(strategy);
-  webAuthnStrategy = strategy;
 }
 
 export async function generateWebAuthnRegistrationOptions(
   request: Request,
+  env: Env,
   user: User | null,
 ) {
   if (webAuthnStrategy == null) {
@@ -125,7 +132,7 @@ export async function generateWebAuthnRegistrationOptions(
 
   const res = await webAuthnStrategy.generateOptions(
     request,
-    sessionStorage,
+    getSessionStorage(env),
     user,
   );
   return res;

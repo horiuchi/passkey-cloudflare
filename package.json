@@ -8,7 +8,7 @@
     "build": "remix build",
     "dev": "remix dev --manual -c \"npm run start\"",
     "start": "wrangler pages dev --compatibility-date=2023-06-21 ./public",
-    "deploy": "npm run build && wrangler pages deploy ./public",
+    "deploy": "npm run build && wrangler pages deploy ./public --project-name passkey-cloudflare",
     "deploy-prod": "npm run deploy -- --branch=master",
     "lint": "run-s -c lint:*",
     "lint:typescript": "tsc",
